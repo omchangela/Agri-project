@@ -43,6 +43,22 @@ const Sidebar = () => {
               Add Banner
             </Link>
           </li>
+          <li>
+            <Link
+              to="/admin/listmovie"
+              className="block p-4 text-gray-700 hover:bg-gray-200 transition duration-200"
+            >
+              List of movie
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/admin/userlist"
+              className="block p-4 text-gray-700 hover:bg-gray-200 transition duration-200"
+            >
+              User List
+            </Link>
+          </li>
           {/* Add more links as needed */}
         </ul>
       </nav>
