@@ -12,7 +12,7 @@ const AddCategory = () => {
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
     if (!token) {
-      navigate('/login'); // Redirect to login if token is not present
+      navigate('/'); // Redirect to login if token is not present
     }
   }, [navigate]);
 

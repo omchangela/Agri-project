@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Listofmovie = () => {
   const [movies, setMovies] = useState([]);
@@ -23,7 +24,7 @@ const Listofmovie = () => {
         if (response.status === 200) {
           setCategories(response.data.data);
         }
-      } catch (err) {
+      } catch {
         setError('Failed to fetch categories. Please try again later.');
       } finally {
         setLoadingCategories(false);
@@ -51,7 +52,7 @@ const Listofmovie = () => {
           setMovies(response.data.data.data);
           setTotalPages(response.data.data.totalPages);
         }
-      } catch (err) {
+      } catch {
         setError('Failed to fetch movies. Please try again later.');
       } finally {
         setLoadingMovies(false);
@@ -61,20 +62,22 @@ const Listofmovie = () => {
     fetchMovies();
   }, [currentPage, itemsPerPage]);
 
-  const toggleStatus = async (id, currentStatus) => {
-    try {
-      const newStatus = currentStatus === 'ACTIVE' ? 'PENDING' : 'ACTIVE';
-      await axios.patch(`https://ottb.leadgenadvertisements.com/api/movie/v1/movies/${id}/status`, {
-        status: newStatus
-      }, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+  const handleDelete = async (movieId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this movie?");
+    if (confirmDelete) {
+      try {
+        const response = await axios.delete(`https://ottb.leadgenadvertisements.com/api/movie/v1/movie/${movieId}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          }
+        });
+        
+        if (response.status === 200) {
+          setMovies((prevMovies) => prevMovies.filter(movie => movie._id !== movieId));
         }
-      });
-
-      setMovies(movies.map(movie => movie._id === id ? { ...movie, status: newStatus } : movie));
-    } catch (err) {
-      setError('Failed to update movie status. Please try again later.');
+      } catch {
+        setError('Failed to delete movie. Please try again later.');
+      }
     }
   };
 
@@ -119,18 +122,23 @@ const Listofmovie = () => {
                     src={`https://ottb.leadgenadvertisements.com/${movie.imageUrl}`} 
                     alt={movie.name} 
                     className="w-20 h-auto" 
-                    crossorigin="anonymous"
+                    crossOrigin="anonymous"
                     onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/150'; }}
                   />
                 </td>
                 <td className="border px-4 py-2">{movie.videoType}</td>
-                <td className="border px-4 py-2">{movie.status}</td>
                 <td className="border px-4 py-2">
+                  {movie.status}
+                </td>
+                <td className="border px-4 py-2 flex space-x-2">
+                  <Link to={`/admin/edit-movie/${movie._id}`} className="text-blue-500 hover:underline">
+                    Edit
+                  </Link>
                   <button 
-                    onClick={() => toggleStatus(movie._id, movie.status)} 
-                    className={`px-4 py-2 rounded ${movie.status === 'ACTIVE' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-black'}`}
+                    onClick={() => handleDelete(movie._id)} 
+                    className="text-red-500 hover:underline"
                   >
-                    {movie.status === 'ACTIVE' ? 'Set to PENDING' : 'Set to ACTIVE'}
+                    Delete
                   </button>
                 </td>
               </tr>

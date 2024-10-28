@@ -17,7 +17,6 @@ const ManageBanners = () => {
           },
         });
         
-        console.log(response); // Log the response for debugging
 
         if (response.data.success) {
           const { movies, categories, banners, users } = response.data.data;
@@ -29,7 +28,6 @@ const ManageBanners = () => {
           setError('Failed to retrieve data');
         }
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
         setError('An error occurred while fetching dashboard data.');
       }
     };

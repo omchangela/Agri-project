@@ -29,7 +29,7 @@ const AddUser = () => {
         email,
         password,
         status,
-        image
+        image,
       });
 
       const response = await axios.post('https://ottb.leadgenadvertisements.com/api/user/v1/user', formData, {
@@ -99,7 +99,7 @@ const AddUser = () => {
               <input
                 type="checkbox"
                 checked={status === 'ACTIVE'}
-                onChange={() => setStatus(status === 'ACTIVE' ? 'PENDING' : 'ACTIVE')}
+                onChange={() => setStatus(status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
                 className="toggle-checkbox absolute block w-10 h-6 rounded-full bg-gray-200 border-4 appearance-none cursor-pointer"
               />
               <label className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>

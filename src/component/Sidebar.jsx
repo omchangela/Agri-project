@@ -53,7 +53,7 @@ const Sidebar = () => {
           </li>
           <li>
             <Link
-              to="/admin/userlist"
+              to="/admin/view-users"
               className="block p-4 text-gray-700 hover:bg-gray-200 transition duration-200"
             >
               User List

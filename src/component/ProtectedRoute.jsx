@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children }) => {
 
   // If no token, redirect to login
   if (!token) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
 
   return children; // Render the protected component
