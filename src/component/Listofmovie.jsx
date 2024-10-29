@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const Listofmovie = () => {
   const [movies, setMovies] = useState([]);
@@ -111,7 +113,7 @@ const Listofmovie = () => {
           </thead>
           <tbody>
             {movies.map((movie) => (
-              <tr key={movie._id} className="hover:bg-gray-100">
+              <tr key={movie._id} className="hover:bg-gray-100 text-center">
                 <td className="border px-4 py-2">
                   {categoryMap[movie.categoryId] || 'Unknown Category'}
                 </td>
@@ -130,15 +132,15 @@ const Listofmovie = () => {
                 <td className="border px-4 py-2">
                   {movie.status}
                 </td>
-                <td className="border px-4 py-2 flex space-x-2">
+                <td className="border py-4 px-4  flex space-x-2">
                   <Link to={`/admin/edit-movie/${movie._id}`} className="text-blue-500 hover:underline">
-                    Edit
+                    <FontAwesomeIcon icon={faEdit} className="mr-1" /> 
                   </Link>
                   <button 
                     onClick={() => handleDelete(movie._id)} 
                     className="text-red-500 hover:underline"
                   >
-                    Delete
+                    <FontAwesomeIcon icon={faTrash} className="mr-1" /> 
                   </button>
                 </td>
               </tr>

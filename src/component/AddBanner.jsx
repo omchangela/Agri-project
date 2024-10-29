@@ -54,7 +54,6 @@ const AddBanner = () => {
       }
     } catch (err) {
       if (err.response) {
-        console.error('Error Response:', err.response.data);
         if (err.response.status === 400) {
           setError('Invalid input. Please check your data and try again.');
         } else if (err.response.status === 401) {

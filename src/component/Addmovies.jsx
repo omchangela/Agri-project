@@ -24,7 +24,6 @@ const AddMovies = () => {
         });
         setCategories(response.data.data); // Adjust based on actual API response structure
       } catch (error) {
-        console.error('Error fetching categories:', error);
         setCategories([]); // Ensure categories is an array even if the request fails
       }
     };
@@ -52,10 +51,7 @@ const AddMovies = () => {
     formData.append('categoryId', categoryId);
     formData.append('status', 'PENDING'); // Set default status or modify as needed
 
-    // Log all form data
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ': ' + pair[1]);
-    }
+    
 
     try {
       setLoading(true); // Start loading
@@ -70,15 +66,10 @@ const AddMovies = () => {
         },
       });
 
-      // Handle success response
-      console.log('Movie added successfully:', response.data);
       setSuccess('Movie added successfully!');
       setError(''); // Clear any previous error
       resetForm(); // Reset the form fields
     } catch (error) {
-      // Handle error response
-      console.error('Error adding movie:', error);
-      console.error('Response data:', error.response ? error.response.data : 'No response data');
       setError('Failed to add movie. Please try again later.');
       setSuccess(''); // Clear any previous success message
     } finally {

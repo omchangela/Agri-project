@@ -26,7 +26,6 @@ const EditUser = () => {
           },
         });
 
-        console.log('Response data:', response.data); // Log the entire response
 
         // Adjust based on the structure of your API response
         const { name, email, status, image: userImage, password: userPassword } = response.data.data; // Assuming password is in response
@@ -36,7 +35,6 @@ const EditUser = () => {
         setCurrentImage(userImage ? `${BASE_URL}${userImage}` : ''); // Set current image URL
         setCurrentPassword(userPassword); // Set current password
       } catch (err) {
-        console.error('Error fetching user data:', err);
         setError('Failed to fetch user data.');
       } finally {
         setLoading(false);
@@ -62,12 +60,9 @@ const EditUser = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log('User updated successfully:', response.data);
       navigate('/admin/view-users');
     } catch (err) {
-      console.error('Error updating user:', err);
       if (err.response) {
-        console.error('Response data:', err.response.data);
         setError(`Failed to update user: ${err.response.data.message || 'Unknown error'}`);
       } else {
         setError('Failed to update user: Network error');
@@ -116,13 +111,13 @@ const EditUser = () => {
             </select>
           </div>
           <div className="mb-3">
-            <label className="block text-gray-700">Password:</label>
+            <label className="block text-gray-700">Old Password:</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="Leave empty to keep current password"
+              placeholder="add current password to make any changes"
             />
           </div>
           <div className="mb-3">
@@ -142,7 +137,6 @@ const EditUser = () => {
                 alt="Current"
                 className="w-36 h-36 object-cover mx-auto"
                 onError={() => {
-                  console.error('Image failed to load:', currentImage);
                   setCurrentImage(''); // Optionally clear the image if it fails
                 }}
               />

@@ -1,223 +1,202 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const EditMovie = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const [movie, setMovie] = useState({
-    name: '',
-    description: '',
-    categoryId: '',
-    videoType: 'LINK', // Default to 'LINK'
-    imageUrl: '',
-    status: 'PUBLISHED',
-    currentImage: '',
-  });
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [categoryId, setCategoryId] = useState('');
   const [categories, setCategories] = useState([]);
-  const [error, setError] = useState('');
+  const [videoType, setVideoType] = useState('LINK');
   const [videoUrl, setVideoUrl] = useState('');
-  const [videoFile, setVideoFile] = useState(null);
-
-  // Base URL for the image
-  const BASE_URL = 'https://ottb.leadgenadvertisements.com/';
+  const [image, setImage] = useState(null);
+  const [video, setVideo] = useState(null);
+  const [status, setStatus] = useState('PENDING'); // New status state
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchMovie = async () => {
-      try {
-        const response = await axios.get(`https://ottb.leadgenadvertisements.com/api/movie/v1/movie/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
-          }
-        });
-        setMovie((prevMovie) => ({
-          ...prevMovie,
-          ...response.data.data,
-          currentImage: BASE_URL + response.data.data.imageUrl, // Construct full URL for the current image
-        }));
-        // Set the video URL based on fetched data
-        setVideoUrl(response.data.data.videoUrl || '');
-      } catch (err) {
-        setError('Failed to fetch movie details.');
-      }
-    };
-
     const fetchCategories = async () => {
       try {
         const response = await axios.get('https://ottb.leadgenadvertisements.com/api/category/v1/categories', {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
-          }
+            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+          },
         });
         setCategories(response.data.data);
-      } catch (err) {
-        setError('Failed to fetch categories.');
+      } catch (error) {
+        setCategories([]);
       }
     };
 
-    fetchMovie();
-    fetchCategories();
-  }, [id]);
+    const fetchMovieDetails = async () => {
+      try {
+        const response = await axios.get(`https://ottb.leadgenadvertisements.com/api/movie/v1/movie/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+          },
+        });
+        const movie = response.data.data;
+        setName(movie.name);
+        setDescription(movie.description);
+        setCategoryId(movie.categoryId);
+        setVideoType(movie.videoType);
+        setVideoUrl(movie.videoUrl || '');
+        setStatus(movie.status || 'PENDING'); // Set status from fetched data
+      } catch (error) {
+      }
+    };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setMovie((prevMovie) => ({ ...prevMovie, [name]: value }));
-    if (name === 'videoType' && value === 'UPLOAD') {
-      setVideoUrl(''); // Clear video URL if switching to UPLOAD
-      setVideoFile(null); // Clear the uploaded file
-    }
-  };
+    fetchCategories();
+    fetchMovieDetails();
+  }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
+    formData.append('name', name);
+    formData.append('description', description);
+    if (image) formData.append('image', image);
+    formData.append('videoType', videoType);
+    formData.append('categoryId', categoryId);
+    formData.append('status', status); // Include status in form data
 
-    // Append form data
-    formData.append('name', movie.name);
-    formData.append('description', movie.description);
-    formData.append('categoryId', movie.categoryId);
-    formData.append('videoType', movie.videoType);
-    formData.append('status', movie.status);
-
-    // Append videoUrl or videoFile based on videoType
-    if (movie.videoType === 'LINK') {
+    if (videoType === 'UPLOAD' && video) {
+      formData.append('movie', video);
+    } else if (videoType === 'LINK') {
       formData.append('videoUrl', videoUrl);
-    } else if (movie.videoType === 'UPLOAD' && videoFile) {
-      formData.append('video', videoFile);
-    }
-
-    // Append new image file if selected
-    if (movie.imageUrl) {
-      formData.append('image', movie.imageUrl);
     }
 
     try {
+      setLoading(true);
+      const token = localStorage.getItem('adminToken');
       await axios.put(`https://ottb.leadgenadvertisements.com/api/movie/v1/movie/${id}`, formData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       });
-      navigate('/admin/listmovie'); // Navigate back to the movie list
-    } catch (err) {
-      setError('Failed to update movie.');
+
+      setSuccess('Movie updated successfully!');
+      setError('');
+    } catch (error) {
+      setError('Failed to update movie. Please try again later.');
+      setSuccess('');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold">Edit Movie</h1>
-      {error && <div className="text-red-500">{error}</div>}
-      <form onSubmit={handleSubmit} className="mt-4">
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={movie.name}
-            onChange={handleChange}
-            required
-            className="border px-2 py-1 w-full"
-          />
-        </div>
-        <div>
-          <label>Description:</label>
-          <textarea
-            name="description"
-            value={movie.description}
-            onChange={handleChange}
-            required
-            className="border px-2 py-1 w-full"
-          />
-        </div>
-        <div>
-          <label>Category:</label>
-          <select
-            name="categoryId"
-            value={movie.categoryId}
-            onChange={handleChange}
-            className="border px-2 py-1 w-full"
-          >
-            <option value="">Select a category</option>
-            {categories.map((category) => (
-              <option key={category._id} value={category._id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label>Video Type:</label>
-          <select
-            name="videoType"
-            value={movie.videoType}
-            onChange={handleChange}
-            required
-            className="border px-2 py-1 w-full"
-          >
-            <option value="LINK">Link</option>
-            <option value="UPLOAD">Upload</option>
-          </select>
-        </div>
-        {movie.videoType === 'LINK' && (
-          <div>
-            <label>Video URL:</label>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-md">
+        <h1 className="text-xl font-bold text-center mb-4">Edit Movie</h1>
+        {success && <div className="text-green-500 mb-4">{success}</div>}
+        {error && <div className="text-red-500 mb-4">{error}</div>}
+        <form onSubmit={handleSubmit}>
+          {/* Existing form fields */}
+          <div className="mb-3">
+            <label className="block text-gray-700">Name:</label>
             <input
-              type="url"
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               required
-              className="border px-2 py-1 w-full"
+              className="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </div>
-        )}
-        {movie.videoType === 'UPLOAD' && (
-          <div>
-            <label>Upload Video File:</label>
+          <div className="mb-3">
+            <label className="block text-gray-700">Description:</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              className="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+          <div className="mb-3">
+            <label className="block text-gray-700">Image File:</label>
             <input
               type="file"
-              accept="video/*"
-              onChange={(e) => setVideoFile(e.target.files[0])}
-              className="border px-2 py-1 w-full"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+              className="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </div>
-        )}
-        
-        <div className="mt-2">
-          <h2 className="text-lg">Current Image:</h2>
-          {movie.currentImage && (
-            <img
-              src={movie.currentImage}
-              alt="Current Movie"
-              className="mt-2 max-w-full h-auto"
-            />
+          <div className="mb-3">
+            <label className="block text-gray-700">Category ID:</label>
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              required
+              className="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+            >
+              <option value="">Select Category</option>
+              {categories.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.name} ({category._id})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-3">
+            <label className="block text-gray-700">Video Type:</label>
+            <select
+              value={videoType}
+              onChange={(e) => setVideoType(e.target.value)}
+              required
+              className="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+            >
+              <option value="LINK">Link</option>
+              <option value="UPLOAD">Upload</option>
+            </select>
+          </div>
+          {videoType === 'LINK' && (
+            <div className="mb-3">
+              <label className="block text-gray-700">Video URL:</label>
+              <input
+                type="url"
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                required
+                className="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
           )}
-        </div>
-        <div>
-          <label>New Image File:</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setMovie((prev) => ({ ...prev, imageUrl: e.target.files[0] }))} // Changed to imageUrl
-            className="border px-2 py-1 w-full"
-          />
-        </div>
-        <div>
-          <label>Status:</label>
-          <select
-            name="status"
-            value={movie.status}
-            onChange={handleChange}
-            className="border px-2 py-1 w-full"
+          {videoType === 'UPLOAD' && (
+            <div className="mb-3">
+              <label className="block text-gray-700">Video File:</label>
+              <input
+                type="file"
+                accept="video/*"
+                onChange={(e) => setVideo(e.target.files[0])}
+                className="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+          )}
+          <div className="mb-3">
+            <label className="block text-gray-700">Status:</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              required
+              className="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+            >
+              <option value="PENDING">Pending</option>
+              <option value="PUBLISHED">Published</option>
+            </select>
+          </div>
+          <button
+            type="submit"
+            className={`w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={loading}
           >
-            <option value="PUBLISHED">PUBLISH</option>
-            <option value="PENDING">Pending</option>
-          </select>
-        </div>
-        <button type="submit" className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
-          Update Movie
-        </button>
-      </form>
+            {loading ? 'Updating...' : 'Update Movie'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

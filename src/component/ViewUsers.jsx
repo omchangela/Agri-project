@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const ViewUsers = () => {
   const [users, setUsers] = useState([]);
@@ -87,22 +89,22 @@ const ViewUsers = () => {
           <tbody>
             {users.length > 0 ? (
               users.map((user) => (
-                <tr key={user._id} className="hover:bg-gray-50">
+                <tr key={user._id} className="hover:bg-gray-50 text-center">
                   <td className="py-3 px-4 border-b">{user.name}</td>
                   <td className="py-3 px-4 border-b">{user.email}</td>
                   <td className="py-3 px-4 border-b">{user.status}</td>
-                  <td className="py-3 px-4 border-b flex space-x-2">
+                  <td className="py-3 px-4 border-b flex space-x-2 justify-center">
                     <button 
-                      className="text-blue-500 hover:underline"
+                      className="text-blue-500 hover:text-blue-700"
                       onClick={() => handleEdit(user._id)}
                     >
-                      Edit
+                      <FontAwesomeIcon icon={faEdit} />
                     </button>
                     <button 
-                      className="text-red-500 hover:underline"
+                      className="text-red-500 hover:text-red-700"
                       onClick={() => handleShowDeleteModal(user)}
                     >
-                      Delete
+                      <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </td>
                 </tr>

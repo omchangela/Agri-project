@@ -38,7 +38,6 @@ const Login = () => {
     setLoading(true); // Start loading
 
     try {
-      console.log('Sending login request...');
       const startTime = performance.now();
 
       const response = await axios.post('https://ottb.leadgenadvertisements.com/api/admin/v1/login', {
@@ -46,7 +45,6 @@ const Login = () => {
         password,
       });
       const endTime = performance.now();
-      console.log(`Login request completed in ${endTime - startTime} milliseconds`);
       // If login is successful
       if (response.data.success) {
         const token = response.data.data.token; // Adjust based on your API's response

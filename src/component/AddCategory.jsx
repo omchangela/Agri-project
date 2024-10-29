@@ -7,6 +7,7 @@ const AddCategory = () => {
   const [image, setImage] = useState(null);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // Loading state for form submission
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,6 +19,7 @@ const AddCategory = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading state to true when form submission starts
     const formData = new FormData();
     formData.append('name', name);
     if (image) formData.append('image', image);
@@ -26,6 +28,7 @@ const AddCategory = () => {
       const token = localStorage.getItem('adminToken');
       if (!token) {
         setError('No token found. Please log in again.');
+        setLoading(false);
         return;
       }
 
@@ -40,7 +43,7 @@ const AddCategory = () => {
         setSuccess('Category added successfully!');
         setName('');
         setImage(null);
-        setError(''); // Clear any previous error
+        setError('');
       }
     } catch (err) {
       if (err.response) {
@@ -54,7 +57,9 @@ const AddCategory = () => {
       } else {
         setError('Failed to add category. Please check your network connection.');
       }
-      setSuccess(''); // Clear any previous success message
+      setSuccess('');
+    } finally {
+      setLoading(false); // Reset loading state after form submission completes
     }
   };
 
@@ -87,8 +92,9 @@ const AddCategory = () => {
           <button
             type="submit"
             className="w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition duration-200"
+            disabled={loading} // Disable button while loading
           >
-            Add Category
+            {loading ? 'Adding...' : 'Add Category'} {/* Show loading text */}
           </button>
         </form>
       </div>
