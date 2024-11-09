@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
+import Footer from './Footer';
 
 const AdminDashboard = () => {
   return (
@@ -16,6 +17,7 @@ const AdminDashboard = () => {
           {/* The Outlet will render the selected component from the route */}
           <Outlet />
         </div>
+        <Footer />
       </div>
     </div>
   );

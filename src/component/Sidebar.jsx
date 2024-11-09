@@ -1,62 +1,75 @@
-// frontend/src/component/Sidebar.jsx
-
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import logo from '../assets/logo2.png';
 
 const Sidebar = () => {
+  const location = useLocation();
+
   return (
     <div className="bg-[#F8F8F8] shadow-md w-64 min-h-screen">
-      <div className="p-4 text-center bg-[#F8F8F8] text-black font-bold text-xl">
-        Admin Panel
+      <div className="pt-4 text-center bg-[#F8F8F8]">
+        <img src={logo} alt="Admin Logo" className="mx-auto w-30 h-20" />
       </div>
       <nav className="mt-4">
         <ul>
-        <li>
+          <li>
             <Link
               to="/admin/dashboard"
-              className="block p-4 text-gray-700 hover:bg-gray-200 transition duration-200"
+              className={`block p-4 text-gray-700 transition duration-200 ${
+                location.pathname === '/admin/dashboard' ? 'text-lg bg-[#02664A] text-white' : 'hover:bg-gray-200'
+              }`}
             >
               Dashboard
             </Link>
           </li>
           <li>
             <Link
-              to="/admin/addmovies"
-              className="block p-4 text-gray-700 hover:bg-gray-200 transition duration-200"
+              to="/admin/view-users"
+              className={`block p-4 text-gray-700 transition duration-200 ${
+                location.pathname === '/admin/view-users' ? 'text-lg bg-[#02664A] text-white' : 'hover:bg-gray-200'
+              }`}
             >
-              Add Movies
+              User List
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/admin/listproduct"
+              className={`block p-4 text-gray-700 transition duration-200 ${
+                location.pathname === '/admin/listproduct' ? 'text-lg bg-[#02664A] text-white' : 'hover:bg-gray-200'
+              }`}
+            >
+              Product List
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/admin/addproduct"
+              className={`block p-4 text-gray-700 transition duration-200 ${
+                location.pathname === '/admin/addproduct' ? 'text-lg bg-[#02664A] text-white' : 'hover:bg-gray-200'
+              }`}
+            >
+              Add Product
             </Link>
           </li>
           <li>
             <Link
               to="/admin/addcategory"
-              className="block p-4 text-gray-700 hover:bg-gray-200 transition duration-200"
+              className={`block p-4 text-gray-700 transition duration-200 ${
+                location.pathname === '/admin/addcategory' ? 'text-lg bg-[#02664A] text-white' : 'hover:bg-gray-200'
+              }`}
             >
-              Add Category
+              Create Category
             </Link>
           </li>
           <li>
             <Link
-              to="/admin/addbanner"
-              className="block p-4 text-gray-700 hover:bg-gray-200 transition duration-200"
+              to="/admin/addbrand"
+              className={`block p-4 text-gray-700 transition duration-200 ${
+                location.pathname === '/admin/addbrand' ? 'text-lg bg-[#02664A] text-white' : 'hover:bg-gray-200'
+              }`}
             >
-              Add Banner
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/admin/listmovie"
-              className="block p-4 text-gray-700 hover:bg-gray-200 transition duration-200"
-            >
-              List of movie
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/admin/view-users"
-              className="block p-4 text-gray-700 hover:bg-gray-200 transition duration-200"
-            >
-              User List
+              Create Brand
             </Link>
           </li>
           {/* Add more links as needed */}

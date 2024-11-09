@@ -9,14 +9,14 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem('adminToken'); // Remove token from local storage
     localStorage.removeItem('adminEmail'); // Remove email from local storage if needed
-    navigate('/login'); // Redirect to login page
+    navigate('/'); // Redirect to login page
   };
 
   // Retrieve the email or username from local storage
   const email = localStorage.getItem('adminEmail');
 
   return (
-    <header className="flex items-center justify-end bg-blue-500 p-4 text-white">
+    <header className="flex items-center justify-end bg-white p-4 text-black">
       <div className="flex items-center">
         <img 
           src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Flag_of_the_United_States.svg" 
